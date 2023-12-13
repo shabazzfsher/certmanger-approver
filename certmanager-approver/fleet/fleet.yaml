@@ -1,0 +1,31 @@
+defaultNamespace: dsocc
+helm:
+  repo: https://charts.jetstack.io
+  chart: cert-manager-approver-policy
+  version: v0.7.0
+  values:
+    namespace: dsocc
+    image:
+      repository: quay.io/jetstack/cert-manager-approver-policy
+    app:
+      approveSignerNames: 
+      - "issuers.cert-manager.io/*"
+      - "clusterissuers.cert-manager.io/*"
+      - "cert-manager.io/*"
+      - "ca-issuer-*"
+      - "googlecasclusterissuers.cas-issuer.jetstack.io/*"
+      - "googlecasissuers.cas-issuer.jetstack.io/*"
+      - "awspcaclusterissuers.awspca.cert-manager.io/*"
+      - "awspcaissuers.awspca.cert-manager.io/*"
+targetCustomizations:
+- name: dsocc-dev
+  clusterSelector:
+    matchLabels:
+      org: dsocc
+      env: dev
+      management.cattle.io/cluster-display-name: dsocc-dev
+  clusterGroup: cert-manager
+  kustomize:
+    dir: overlay/dsocc-dev
+dependsOn:
+  - name: cert-issuer
